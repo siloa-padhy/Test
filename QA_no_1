@@ -1,0 +1,28 @@
+#include <iostream>
+#include<string.h>
+#include <bits/stdc++.h> 
+using namespace std; 
+
+int main() 
+{ 
+    string str1 = ""; 
+    cout<<"Enter Here"<<endl;
+    cin>>str1;
+    string str2=str1;
+ 
+    reverse(str1.begin(), str1.end()); 
+  
+    cout << str1<<endl; 
+    
+if (strcasecmp(str1.c_str(), str2.c_str()) == 0)
+{
+   cout <<" palindrome"<<endl;
+}
+else
+{
+    cout<<"not palindrome"<<endl;
+    
+}
+    
+    return 0; 
+} 

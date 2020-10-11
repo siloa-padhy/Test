@@ -1,0 +1,28 @@
+
+create table STUDENTS(
+ID integer not NULL ,
+NAME VARCHAR not NULL, 
+MARKs integer not NULL,
+PRIMARY KEY (ID)
+); 
+
+
+insert into STUDENTS values(1,"Anil padhy",'91');
+insert into STUDENTS values(2,"Sashadhar padhy",'89');
+insert into STUDENTS values(3,"Ayan padhy",'76');
+insert into STUDENTS values(4,"Ashok padhy",'50');
+insert into STUDENTS values(5,"Vikas padhy",'30');
+insert into STUDENTS values(7,"Gautam padhy",'30');
+insert into STUDENTS values(8,"Jagannath padhy",'80');
+insert into STUDENTS values(9,"Laxmidhar padhy",'66');
+insert into STUDENTS values(10,"Sridhar padhy",'60');
+
+select ID,NAME,MARKS,
+ CASE
+ WHEN (MARKS BETWEEN 91 AND 100) THEN 'A+'
+ WHEN MARKS<91 AND MARKS>70 THEN 'A'
+ WHEN MARKS<71 AND MARKS>50 THEN 'B'
+ WHEN MARKS<51 AND MARKS>=40 THEN 'C'
+ WHEN MARKS<40  THEN 'fail'
+ END as Grade
+ from STUDENTS;
