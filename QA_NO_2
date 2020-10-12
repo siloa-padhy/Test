@@ -1,22 +1,4 @@
 
 
-create table CUSTOMER(
-ID integer not NULL ,
-NAME test not NULL, 
-COUNTRY test not NULL,
-CREDITS integer not NULL,
-PRIMARY KEY (ID)
-); 
-
-insert into CUSTOMER values(1,"Anil padhy","india",1000);
-insert into CUSTOMER values(2,"Sashadhar padhy","INDIA",2000);
-insert into CUSTOMER values(3,"Ayan padhy","INDIA",1000);
-insert into CUSTOMER values(4,"Sashadhar padhy","INDIA",3000);
-insert into CUSTOMER values(5,"Vikas padhy","India",5000);
-insert into CUSTOMER values(7,"Sashadhar padhy","india",500);
-insert into CUSTOMER values(8,"Jagannath padhy","bharat",2000);
-insert into CUSTOMER values(9,"Laxmidhar padhy","india",100);
-insert into CUSTOMER values(10,"Sridhar padhy","Bharat",10);
-
 
 select ID,NAME from CUSTOMER c order by c.NAME DESC,c.ID ASC;
