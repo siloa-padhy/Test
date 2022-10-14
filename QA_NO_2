@@ -1,4 +1,0 @@
-
-
-
-select ID,NAME from CUSTOMER c order by c.NAME DESC,c.ID ASC;
