@@ -12,15 +12,19 @@ import (
 	type HelloHandler struct{}
 
 	var data []byte
-	
+	var count int=0
 	var a utils.SampleInput
 	var startTime time.Time=time.Now()
 	var start time.Time =startTime.Add(1*time.Second)
 	    // start:=startTime.Add(1*time.Second)
 	var maxtime time.Time=startTime.Add(60 * time.Second)
 	var collection []utils.SampleInput
-	func (h *HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *HelloHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// var body []byte
+		if r.Method !="POST" {
+			http.NotFound(w, r)
+			return
+		}
 		duration := time.Now().Sub(startTime)
 		fmt.Println("duration",duration.Seconds())
 		fmt.Println("durationmax",maxtime.Second())
@@ -37,8 +41,16 @@ import (
 		fmt.Fprintf(w, "","Trxn Success",collection)
 	}
 	type WorldHandler struct{}
-	func (g *WorldHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (g *WorldHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// var body []byte
+		if r.Body==nil {
+			fmt.Fprintf(w,"Request body empty")
+			return
+		}
+		if r.Method !="GET" {
+			http.NotFound(w, r)		
+			return
+		}
 		var b utils.SampleResponse
 		w.Header().Set("Content-Type", "application/json")
 		// reqBody, _ := ioutil.ReadAll(r.Body)
@@ -50,25 +62,26 @@ import (
 		b.Count=count
 		fmt.Fprintf(w, "","Trxn Success",b)
 	}
-	func CalculateTrxn()(float64,int,int,int,int){
-		count:=1
+func CalculateTrxn()(float64,int,int,int,int){
+		count=1
 		sum:=0.0
 		a:=[]int{}
-		for i,_:=range collection{
-			sum=sum+collection[i].Amount
-			count=count+i
-            // if max<collection[i].Amount{
-			// 	max=collection[i+1].Amount
-				
-			// }
-			a=append(a, int(collection[i].Amount))
-			
+		if collection==nil{
+			return 0,0,0,0,0
 		}
+			for i,_:=range collection{
+				sum=sum+collection[i].Amount
+				count=count+i
+				a=append(a, int(collection[i].Amount))
+				
+			}             
+		
 		Avg:=int(sum)/count
         min,max:=findMinAndMax(a)
 	 return sum,Avg,min,max,count
 	}
-    func findMinAndMax(a []int) (min int, max int) {
+	
+func findMinAndMax(a []int) (min int, max int) {
 		min = a[0]
 		max = a[0]
 		for _, value := range a {
@@ -82,10 +95,15 @@ import (
 		return min, max
 	}
 	type MyHandler struct{}	
-	func (p *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *MyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// var body []byte
+		if r.Method !="GET" {
+			http.NotFound(w, r)
+			return
+		}
 		collection=nil
 		startTime=time.Now()
+		count=0
 		fmt.Fprintf(w, "","Trxndelete Success")
 	}
 	
@@ -94,22 +112,22 @@ func main() {
 	trxn := HelloHandler{}
 	trxncal := WorldHandler{}
 	delete :=MyHandler{}
-	// world := WorldHandler{}
 	http.HandleFunc("/transaction", processTimeout(trxn.ServeHTTP, 2*time.Second))
 	http.HandleFunc("/response", processTimeout(trxncal.ServeHTTP,10*time.Second))
 	http.HandleFunc("/delete", processTimeout(delete.ServeHTTP,5*time.Second))
-	// http.Handle("/hello", &hello)
-	// http.Handle("/world", &world)
 	http.ListenAndServe(":8080", nil)
 }
 
 func processTimeout(h http.HandlerFunc, duration time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Body==nil {
+			fmt.Fprintf(w,"Request Body Empty")
+			return
+		}
 		ctx, cancel := context.WithTimeout(r.Context(), duration)
 		defer cancel()
-
 		r = r.WithContext(ctx)
-
+        
 		processDone := make(chan bool)
 		go func() {
 			h(w, r)
@@ -128,26 +146,3 @@ func processTimeout(h http.HandlerFunc, duration time.Duration) http.HandlerFunc
 		}
 	}
 }
-// package main
-
-// import (
-//     "fmt"
-//     "github.com/gorilla/mux"
-//     "net/http"
-//     "time"
-// )
-
-// func rootHandler(w http.ResponseWriter, r *http.Request) {
-//     time.Sleep(5 * time.Second)
-//     fmt.Fprintf(w, "Hello!")
-// 	w.Write([]byte("Hellooooooo!"))
-// }
-
-// func main() {
-//     mux := mux.NewRouter()
-//     mux.HandleFunc("/", rootHandler)
-
-//     muxWithMiddlewares := http.TimeoutHandler(mux, time.Second*3, "Timeout!")
-
-//     http.ListenAndServe(":8080", muxWithMiddlewares)
-// }
